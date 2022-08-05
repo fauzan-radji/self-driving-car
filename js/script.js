@@ -12,3 +12,17 @@ const car = new Car({
 });
 
 car.draw();
+
+// Rendering
+animate();
+
+function animate() {
+  car.update();
+  car.draw();
+
+  requestAnimationFrame(animate);
+}
+
+window.addEventListener("resize", () => {
+  canvas.resize(200, innerHeight);
+});

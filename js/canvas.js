@@ -85,6 +85,36 @@ class Canvas {
     return this;
   }
 
+  translate(point) {
+    this.ctx.translate(point.x, point.y);
+
+    return this;
+  }
+
+  /**
+   * Rotate the canvas around the center
+   * @param {number} angle angle in degrees
+   */
+  rotate(angle) {
+    // angle from degrees to radians
+    angle = (angle * Math.PI) / 180;
+    this.ctx.rotate(angle);
+
+    return this;
+  }
+
+  save() {
+    this.ctx.save();
+
+    return this;
+  }
+
+  restore() {
+    this.ctx.restore();
+
+    return this;
+  }
+
   set fillStyle(color) {
     this.fillStyle_ = color;
     this.ctx.fillStyle = color;
