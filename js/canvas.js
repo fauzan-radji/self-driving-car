@@ -1,11 +1,16 @@
 class Canvas {
+  #fillStyle;
+  #strokeStyle;
+  #lineWidth;
+  #lineDash;
+
   constructor({ id, width, height }) {
     this.id = id;
     this.canvas = document.getElementById(id);
     this.ctx = this.canvas.getContext("2d");
     this.fillStyle = "#fff";
     this.strokeStyle = "#fff";
-    this.strokeWidth = 1;
+    this.lineWidth = 1;
 
     this.resize(width, height);
   }
@@ -18,6 +23,12 @@ class Canvas {
       Math.round(this.width / 2),
       Math.round(this.height / 2)
     );
+
+    return this;
+  }
+
+  drawImage(image, point, width, height) {
+    this.ctx.drawImage(image, point.x, point.y, width, height);
 
     return this;
   }
@@ -65,8 +76,14 @@ class Canvas {
     return this;
   }
 
-  stroke(color = "#000") {
+  stroke({
+    color = this.#strokeStyle,
+    width = this.#lineWidth,
+    dash = this.#lineDash,
+  } = {}) {
     this.strokeStyle = color;
+    this.lineWidth = width;
+    this.lineDash = dash;
     this.ctx.stroke();
 
     return this;
@@ -80,7 +97,7 @@ class Canvas {
   }
 
   clear() {
-    this.ctx.clearRect(0, 0, this.width, this.height);
+    this.canvas.height = this.height;
 
     return this;
   }
@@ -116,18 +133,23 @@ class Canvas {
   }
 
   set fillStyle(color) {
-    this.fillStyle_ = color;
+    this.#fillStyle = color;
     this.ctx.fillStyle = color;
   }
 
   set strokeStyle(color) {
-    this.strokeStyle_ = color;
+    this.#strokeStyle = color;
     this.ctx.strokeStyle = color;
   }
 
-  set strokeWidth(width) {
-    this.strokeWidth_ = width;
-    this.ctx.strokeWidth = width;
+  set lineWidth(width) {
+    this.#lineWidth = width;
+    this.ctx.lineWidth = width;
+  }
+
+  set lineDash(dash) {
+    this.#lineDash = dash;
+    this.ctx.setLineDash(dash);
   }
 
   set width(width) {
@@ -147,14 +169,18 @@ class Canvas {
   }
 
   get fillStyle() {
-    this.fillStyle_;
+    return this.#fillStyle;
   }
 
   get strokeStyle() {
-    this.strokeStyle_;
+    return this.#strokeStyle;
   }
 
-  get strokeWidth() {
-    this.strokeWidth_;
+  get lineWidth() {
+    return this.#lineWidth;
+  }
+
+  get lineDash() {
+    return this.#lineDash;
   }
 }

@@ -4,25 +4,31 @@ const canvas = new Canvas({
   height: innerHeight,
 });
 
+const road = new Road(canvas.center.x, canvas.width - 20);
 const car = new Car({
-  position: new Vector(100, 100),
-  width: 30,
-  height: 50,
+  position: new Vector(road.getLaneCenter(1), 100),
   canvas,
 });
-
-car.draw();
 
 // Rendering
 animate();
 
 function animate() {
   car.update();
+
+  canvas.clear();
+
+  canvas.save().translate({
+    x: 0,
+    y: -car.position.y + canvas.height - car.width - 50,
+  });
+  road.draw();
   car.draw();
 
+  canvas.restore();
   requestAnimationFrame(animate);
 }
 
 window.addEventListener("resize", () => {
-  canvas.resize(200, innerHeight);
+  canvas.resize(canvas.width, innerHeight);
 });
