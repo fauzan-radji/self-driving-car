@@ -7,17 +7,17 @@ class Road {
     this.left = x - width / 2;
     this.right = x + width / 2;
 
-    const infinity = 10000;
+    const infinity = 100000;
     this.top = -infinity;
-    this.bottom = infinity / 2;
+    this.bottom = canvas.height;
 
     const topLeft = new Vector(this.left, this.top);
     const topRight = new Vector(this.right, this.top);
     const bottomLeft = new Vector(this.left, this.bottom);
     const bottomRight = new Vector(this.right, this.bottom);
     this.borders = [
-      [topLeft, bottomLeft],
-      [topRight, bottomRight],
+      new Segment(topLeft, bottomLeft),
+      new Segment(topRight, bottomRight),
     ];
   }
 
@@ -30,8 +30,9 @@ class Road {
     );
   }
 
-  draw() {
+  draw(canvas) {
     canvas.lineWidth = 5;
+    canvas.strokeStyle = "#fff";
     canvas.beginPath();
     for (let i = 1; i < this.laneCount; i++) {
       const x = lerp(this.left, this.right, i / this.laneCount);
@@ -50,7 +51,7 @@ class Road {
     canvas.stroke({ dash: [20, 20] });
 
     canvas.beginPath();
-    for (const border of this.borders) canvas.line(border[0], border[1]);
+    for (const border of this.borders) canvas.line(border.start, border.end);
     canvas.stroke({ dash: [] });
   }
 }

@@ -4,9 +4,8 @@ class Car {
   #acceleration;
   #friction;
 
-  constructor({ position, canvas }) {
+  constructor(position) {
     this.position = position;
-    this.canvas = canvas;
 
     this.img = new Image();
     const { src, width } = Car.randomCar;
@@ -14,17 +13,20 @@ class Car {
     this.width = width;
     this.height = 75;
 
-    this.control = new Control();
-    this.#maxSpeed = 10;
+    this.#maxSpeed = 5;
     this.#acceleration = 0.1;
     this.#friction = 0.05;
 
     this.speed = 0;
     this.angle = 0;
+
+    this.control = new Control();
+    this.sensor = new Sensor(this);
   }
 
-  update() {
+  update(roadBorders) {
     this.#move();
+    this.sensor.update(roadBorders);
   }
 
   #move() {
@@ -50,11 +52,13 @@ class Car {
     this.position.y -= Math.cos(radian) * this.speed;
   }
 
-  draw() {
-    this.canvas.save().translate(this.position).rotate(-this.angle);
+  draw(canvas) {
+    this.sensor.draw(canvas);
+
+    canvas.save().translate(this.position).rotate(-this.angle);
 
     if (this.img.complete) {
-      this.canvas.drawImage(
+      canvas.drawImage(
         this.img,
         {
           x: -this.width / 2,
@@ -64,7 +68,7 @@ class Car {
         this.height
       );
     } else {
-      this.canvas
+      canvas
         .beginPath()
         .rect(
           {
@@ -77,7 +81,7 @@ class Car {
         .fill();
     }
 
-    this.canvas.restore();
+    canvas.restore();
   }
 
   set speed(speed) {

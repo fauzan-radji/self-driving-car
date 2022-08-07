@@ -5,16 +5,13 @@ const canvas = new Canvas({
 });
 
 const road = new Road(canvas.center.x, canvas.width - 20);
-const car = new Car({
-  position: new Vector(road.getLaneCenter(1), 100),
-  canvas,
-});
+const car = new Car(new Vector(road.getLaneCenter(1), canvas.height - 100));
 
 // Rendering
 animate();
 
 function animate() {
-  car.update();
+  car.update(road.borders);
 
   canvas.clear();
 
@@ -22,8 +19,8 @@ function animate() {
     x: 0,
     y: -car.position.y + canvas.height - car.width - 50,
   });
-  road.draw();
-  car.draw();
+  road.draw(canvas);
+  car.draw(canvas);
 
   canvas.restore();
   requestAnimationFrame(animate);
