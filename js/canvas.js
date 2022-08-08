@@ -33,6 +33,25 @@ class Canvas {
     return this;
   }
 
+  // angle in radian
+  rotateAndDrawImage(image, point, width, height, angle) {
+    this.save()
+      .translate(point)
+      .rotate(-angle)
+      .drawImage(
+        image,
+        {
+          x: -width / 2,
+          y: -height / 2,
+        },
+        width,
+        height
+      )
+      .restore();
+
+    return this;
+  }
+
   circle(point, radius) {
     this.ctx.arc(point.x, point.y, radius, 0, 2 * Math.PI);
 
@@ -110,11 +129,9 @@ class Canvas {
 
   /**
    * Rotate the canvas around the center
-   * @param {number} angle angle in degrees
+   * @param {number} angle angle in radian
    */
   rotate(angle) {
-    // angle from degrees to radians
-    angle = (angle * Math.PI) / 180;
     this.ctx.rotate(angle);
 
     return this;

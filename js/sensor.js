@@ -1,9 +1,9 @@
 class Sensor {
   constructor(car) {
     this.car = car;
-    this.rayCount = 5;
+    this.rayCount = 9;
     this.rayLength = 150;
-    this.raySpread = 90; // degrees
+    this.raySpread = 135; // degrees
 
     this.rays = [];
     this.readings = [];
@@ -38,14 +38,14 @@ class Sensor {
     this.rays = [];
 
     for (let i = 0; i < this.rayCount; i++) {
-      const rayAngle =
-        lerp(
-          this.raySpread / 2,
-          -this.raySpread / 2,
-          this.rayCount === 1 ? 0.5 : i / (this.rayCount - 1)
-        ) + this.car.angle;
+      // rayAngle is in degrees
+      const rayAngle = lerp(
+        this.raySpread / 2,
+        -this.raySpread / 2,
+        this.rayCount === 1 ? 0.5 : i / (this.rayCount - 1)
+      );
 
-      const radian = (rayAngle * Math.PI) / 180;
+      const radian = (rayAngle * Math.PI) / 180 + this.car.angleRadian;
 
       const start = this.car.position;
       const { x, y } = this.car.position;

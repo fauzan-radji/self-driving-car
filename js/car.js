@@ -8,7 +8,8 @@ class Car {
     this.position = position;
 
     this.img = new Image();
-    const { src, width } = Car.randomCar;
+    // const { src, width } = Car.randomCar;
+    const { src, width } = Car.cars[1];
     this.img.src = src;
     this.width = width;
     this.height = 75;
@@ -19,14 +20,64 @@ class Car {
 
     this.speed = 0;
     this.angle = 0;
+    this.damaged = false;
 
     this.control = new Control();
     this.sensor = new Sensor(this);
   }
 
   update(roadBorders) {
-    this.#move();
+    if (!this.damaged) {
+      this.#move();
+      this.segments = this.#createSegments();
+      this.damaged = this.#assesDamage(roadBorders);
+    }
+
     this.sensor.update(roadBorders);
+  }
+
+  #assesDamage(roadBorders) {
+    for (const roadBorder of roadBorders) {
+      for (const segment of this.segments) {
+        const touch = segment.getIntersection(roadBorder);
+
+        if (touch) return true;
+      }
+    }
+
+    return false;
+  }
+
+  #createSegments() {
+    const points = [];
+    const { width, height, position, angleRadian: angle } = this;
+    const { x, y } = position;
+    const radius = Math.hypot(width, height) / 2;
+    const alpha = Math.atan2(width, height);
+
+    const topLeft = new Vector(
+      x - Math.sin(angle - alpha) * radius,
+      y - Math.cos(angle - alpha) * radius
+    );
+    const topRight = new Vector(
+      x - Math.sin(angle + alpha) * radius,
+      y - Math.cos(angle + alpha) * radius
+    );
+    const bottomRight = new Vector(
+      x - Math.sin(Math.PI + angle - alpha) * radius,
+      y - Math.cos(Math.PI + angle - alpha) * radius
+    );
+    const bottomLeft = new Vector(
+      x - Math.sin(Math.PI + angle + alpha) * radius,
+      y - Math.cos(Math.PI + angle + alpha) * radius
+    );
+
+    const top = new Segment(topLeft, topRight);
+    const right = new Segment(topRight, bottomRight);
+    const bottom = new Segment(bottomRight, bottomLeft);
+    const left = new Segment(bottomLeft, topLeft);
+
+    return [top, right, bottom, left];
   }
 
   #move() {
@@ -46,7 +97,7 @@ class Car {
       if (control.right) this.angle -= flip;
     }
 
-    const radian = (this.angle * Math.PI) / 180;
+    const radian = this.angleRadian;
 
     this.position.x -= Math.sin(radian) * this.speed;
     this.position.y -= Math.cos(radian) * this.speed;
@@ -55,9 +106,12 @@ class Car {
   draw(canvas) {
     this.sensor.draw(canvas);
 
-    canvas.save().translate(this.position).rotate(-this.angle);
+    // if damaged, change image
+    if (this.damaged) this.img.src = Car.damaged.src;
 
+    canvas.save().translate(this.position).rotate(-this.angleRadian);
     if (this.img.complete) {
+      // draw the car
       canvas.drawImage(
         this.img,
         {
@@ -68,6 +122,7 @@ class Car {
         this.height
       );
     } else {
+      // ohterwise, draw a placeholder
       canvas
         .beginPath()
         .rect(
@@ -89,6 +144,10 @@ class Car {
     speed = Math.max(-this.#maxSpeed / 4, Math.min(this.#maxSpeed, speed));
 
     this.#speed = speed;
+  }
+
+  get angleRadian() {
+    return (this.angle * Math.PI) / 180;
   }
 
   get speed() {
@@ -124,5 +183,12 @@ class Car {
     const randomIndex = Math.floor(Math.random() * Car.cars.length);
 
     return Car.cars[randomIndex];
+  }
+
+  static get damaged() {
+    return {
+      src: "cars/car-damaged.png",
+      width: 36.9,
+    };
   }
 }
