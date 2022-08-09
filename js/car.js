@@ -4,17 +4,27 @@ class Car {
   #acceleration;
   #friction;
 
-  constructor(position) {
+  constructor({ position, controlType }) {
     this.position = position;
 
     this.img = new Image();
-    // const { src, width } = Car.randomCar;
-    const { src, width } = Car.cars[1];
-    this.img.src = src;
-    this.width = width;
-    this.height = 75;
+    if (controlType !== "DUMMY") {
+      const playerCar = Car.player;
+      this.img.src = playerCar.src;
+      this.width = playerCar.width;
+      this.height = playerCar.height;
 
-    this.#maxSpeed = 5;
+      this.damagedCar = Car.damaged;
+      this.damagedCar.img = new Image();
+      this.damagedCar.img.src = this.damagedCar.src;
+    } else {
+      const { src, width, height } = Car.randomCar;
+      this.img.src = src;
+      this.width = width;
+      this.height = height;
+    }
+
+    this.#maxSpeed = controlType !== "DUMMY" ? 3 : 2;
     this.#acceleration = 0.1;
     this.#friction = 0.05;
 
@@ -22,26 +32,37 @@ class Car {
     this.angle = 0;
     this.damaged = false;
 
-    this.control = new Control();
-    this.sensor = new Sensor(this);
+    this.control = new Control(controlType);
+
+    if (controlType !== "DUMMY") this.sensor = new Sensor(this);
   }
 
-  update(roadBorders) {
+  update(roadBorders, traffic = []) {
     if (!this.damaged) {
       this.#move();
       this.segments = this.#createSegments();
-      this.damaged = this.#assesDamage(roadBorders);
+      this.damaged = this.#assesDamage(roadBorders, traffic);
     }
 
-    this.sensor.update(roadBorders);
+    if (this.sensor) this.sensor.update(roadBorders, traffic);
   }
 
-  #assesDamage(roadBorders) {
+  #assesDamage(roadBorders, traffic) {
     for (const roadBorder of roadBorders) {
       for (const segment of this.segments) {
         const touch = segment.getIntersection(roadBorder);
 
         if (touch) return true;
+      }
+    }
+
+    for (const car of traffic) {
+      for (const trafficSegment of car.segments) {
+        for (const segment of this.segments) {
+          const touch = segment.getIntersection(trafficSegment);
+
+          if (touch) return true;
+        }
       }
     }
 
@@ -104,22 +125,22 @@ class Car {
   }
 
   draw(canvas) {
-    this.sensor.draw(canvas);
+    if (this.sensor) this.sensor.draw(canvas);
 
     // if damaged, change image
-    if (this.damaged) this.img.src = Car.damaged.src;
+    const car = this.damaged ? this.damagedCar : this;
 
     canvas.save().translate(this.position).rotate(-this.angleRadian);
-    if (this.img.complete) {
+    if (car.img.complete) {
       // draw the car
       canvas.drawImage(
-        this.img,
+        car.img,
         {
-          x: -this.width / 2,
-          y: -this.height / 2,
+          x: -car.width / 2,
+          y: -car.height / 2,
         },
-        this.width,
-        this.height
+        car.width,
+        car.height
       );
     } else {
       // ohterwise, draw a placeholder
@@ -127,11 +148,11 @@ class Car {
         .beginPath()
         .rect(
           {
-            x: -this.width / 2,
-            y: -this.height / 2,
+            x: -car.width / 2,
+            y: -car.height / 2,
           },
-          this.width,
-          this.height
+          car.width,
+          car.height
         )
         .fill();
     }
@@ -163,18 +184,17 @@ class Car {
       {
         src: "cars/car-1.png",
         width: 36.9,
+        height: 75,
       },
       {
         src: "cars/car-2.png",
-        width: 36.9,
+        width: 38,
+        height: 75,
       },
       {
         src: "cars/car-3.png",
         width: 39,
-      },
-      {
-        src: "cars/car-4.png",
-        width: 38,
+        height: 75,
       },
     ];
   }
@@ -185,10 +205,19 @@ class Car {
     return Car.cars[randomIndex];
   }
 
+  static get player() {
+    return {
+      src: "cars/car-player.png",
+      width: 36.9,
+      height: 75,
+    };
+  }
+
   static get damaged() {
     return {
       src: "cars/car-damaged.png",
       width: 36.9,
+      height: 75,
     };
   }
 }

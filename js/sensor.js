@@ -9,21 +9,28 @@ class Sensor {
     this.readings = [];
   }
 
-  update(roadBorders) {
+  update(roadBorders, traffic) {
     this.#castRays();
     this.readings = [];
     for (const ray of this.rays) {
-      this.readings.push(this.#getReading(ray, roadBorders));
+      this.readings.push(this.#getReading(ray, roadBorders, traffic));
     }
   }
 
-  #getReading(ray, roadBorders) {
+  #getReading(ray, roadBorders, traffic) {
     let touches = [];
     for (const border of roadBorders) {
       const touch = ray.getIntersection(border);
 
       if (touch) touches.push(touch);
     }
+
+    for (const car of traffic)
+      for (const segment of car.segments) {
+        const touch = ray.getIntersection(segment);
+
+        if (touch) touches.push(touch);
+      }
 
     if (touches.length === 0) {
       return null;
@@ -65,11 +72,11 @@ class Sensor {
       if (this.readings[i]) end = this.readings[i];
 
       canvas.beginPath().line(ray.start, end).stroke({
-        color: "#ff0",
+        color: "#f00",
         width: 2,
       });
 
-      canvas.beginPath().line(ray.end, end).stroke({ color: "#f00" });
+      canvas.beginPath().line(ray.end, end).stroke({ color: "#ff0" });
     }
   }
 }
