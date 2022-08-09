@@ -7,7 +7,7 @@ const canvas = new Canvas({
 const road = new Road(canvas.center.x, canvas.width - 20);
 const car = new Car({
   position: new Vector(road.getLaneCenter(1), canvas.height - 100),
-  controlType: "KEYS",
+  controlType: "AI",
 });
 const traffic = [
   new Car({

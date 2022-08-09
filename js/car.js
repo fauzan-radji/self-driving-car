@@ -32,9 +32,13 @@ class Car {
     this.angle = 0;
     this.damaged = false;
 
-    this.control = new Control(controlType);
+    this.useBrain = controlType === "AI";
+
+    this.controls = new Control(controlType);
 
     if (controlType !== "DUMMY") this.sensor = new Sensor(this);
+    if (this.useBrain)
+      this.brain = new NeuralNetwork([this.sensor.rayCount, 8, 4]);
   }
 
   update(roadBorders, traffic = []) {
@@ -44,7 +48,23 @@ class Car {
       this.damaged = this.#assesDamage(roadBorders, traffic);
     }
 
-    if (this.sensor) this.sensor.update(roadBorders, traffic);
+    if (this.sensor) {
+      this.sensor.update(roadBorders, traffic);
+      const offsets = this.sensor.readings.map((reading) =>
+        reading ? 1 - reading.offset : 0
+      );
+
+      if (this.useBrain) {
+        const outputs = NeuralNetwork.feedForward(offsets, this.brain);
+
+        const [forward, left, right, reverse] = outputs;
+
+        this.controls.forward = forward;
+        this.controls.left = left;
+        this.controls.right = right;
+        this.controls.reverse = reverse;
+      }
+    }
   }
 
   #assesDamage(roadBorders, traffic) {
@@ -70,7 +90,6 @@ class Car {
   }
 
   #createSegments() {
-    const points = [];
     const { width, height, position, angleRadian: angle } = this;
     const { x, y } = position;
     const radius = Math.hypot(width, height) / 2;
@@ -102,7 +121,7 @@ class Car {
   }
 
   #move() {
-    const control = this.control;
+    const control = this.controls;
 
     if (control.forward) this.speed += this.#acceleration;
     if (control.reverse) this.speed -= this.#acceleration;
