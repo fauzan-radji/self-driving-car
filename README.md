@@ -16,3 +16,4 @@ This repo is based on [this course](https://youtube.com/playlist?list=PLB0Tybl0U
 4. [Collision detection.](https://youtu.be/M8kq2eJRIp0)
 5. [Simulating traffic.](https://youtu.be/s3MpIa63BXY)
 6. [Implementing neural network.](https://youtu.be/Ve9TcAkpFgY)
+7. [Visualizing neural network.](https://youtu.be/lok3RVBwSqE)

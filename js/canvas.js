@@ -3,6 +3,10 @@ class Canvas {
   #strokeStyle;
   #lineWidth;
   #lineDash;
+  #lineDashOffset;
+  #textAlign;
+  #baseLine;
+  #font;
 
   constructor({ id, width, height }) {
     this.id = id;
@@ -11,6 +15,8 @@ class Canvas {
     this.fillStyle = "#fff";
     this.strokeStyle = "#fff";
     this.lineWidth = 1;
+    this.lineDash = [];
+    this.lineDashOffset = 0;
 
     this.resize(width, height);
   }
@@ -81,6 +87,23 @@ class Canvas {
     this.ctx.lineTo(point.x, point.y);
 
     return this;
+  }
+
+  text({
+    text,
+    at,
+    fillStyle = this.#fillStyle,
+    strokeStyle = this.#strokeStyle,
+    size = 16,
+  }) {
+    this.beginPath();
+    this.textAlign = "center";
+    this.baseLine = "center";
+    this.fillStyle = fillStyle;
+    this.strokeStyle = strokeStyle;
+    this.font = `${size}px Arial`;
+    this.ctx.fillText(text, at.x, at.y);
+    this.ctx.strokeText(text, at.x, at.y);
   }
 
   beginPath() {
@@ -169,12 +192,32 @@ class Canvas {
     this.ctx.setLineDash(dash);
   }
 
+  set lineDashOffset(offset) {
+    this.#lineDashOffset = offset;
+    this.ctx.lineDashOffset = offset;
+  }
+
   set width(width) {
     this.canvas.width = width;
   }
 
   set height(height) {
     this.canvas.height = height;
+  }
+
+  set textAlign(align) {
+    this.#textAlign = align;
+    this.ctx.textAlign = align;
+  }
+
+  set baseLine(align) {
+    this.#baseLine = align;
+    this.ctx.baseLine = align;
+  }
+
+  set font(font) {
+    this.#font = font;
+    this.ctx.font = font;
   }
 
   get width() {
@@ -199,5 +242,21 @@ class Canvas {
 
   get lineDash() {
     return this.#lineDash;
+  }
+
+  get lineDashOffset() {
+    return this.#lineDashOffset;
+  }
+
+  get textAlign() {
+    return this.#textAlign;
+  }
+
+  get baseLine() {
+    return this.#baseLine;
+  }
+
+  get font() {
+    return this.#font;
   }
 }

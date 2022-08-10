@@ -1,5 +1,5 @@
 class Road {
-  constructor(x, width, laneCount = 3) {
+  constructor({ x, width, canvas, laneCount = 3 }) {
     this.x = x;
     this.width = width;
     this.laneCount = laneCount;
@@ -9,7 +9,9 @@ class Road {
 
     const infinity = 100000;
     this.top = -infinity;
-    this.bottom = canvas.height;
+    this.bottom = canvas.height + infinity / 10;
+
+    this.canvas = canvas;
 
     const topLeft = new Vector(this.left, this.top);
     const topRight = new Vector(this.right, this.top);
@@ -30,14 +32,14 @@ class Road {
     );
   }
 
-  draw(canvas) {
-    canvas.lineWidth = 5;
-    canvas.strokeStyle = "#fff";
-    canvas.beginPath();
+  draw() {
+    this.canvas.lineWidth = 5;
+    this.canvas.strokeStyle = "#fff";
+    this.canvas.beginPath();
     for (let i = 1; i < this.laneCount; i++) {
       const x = lerp(this.left, this.right, i / this.laneCount);
 
-      canvas.line(
+      this.canvas.line(
         {
           x,
           y: this.top,
@@ -48,10 +50,11 @@ class Road {
         }
       );
     }
-    canvas.stroke({ dash: [20, 20] });
+    this.canvas.stroke({ dash: [20, 20] });
 
-    canvas.beginPath();
-    for (const border of this.borders) canvas.line(border.start, border.end);
-    canvas.stroke({ dash: [] });
+    this.canvas.beginPath();
+    for (const border of this.borders)
+      this.canvas.line(border.start, border.end);
+    this.canvas.stroke({ dash: [] });
   }
 }

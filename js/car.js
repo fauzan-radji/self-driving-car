@@ -4,8 +4,9 @@ class Car {
   #acceleration;
   #friction;
 
-  constructor({ position, controlType }) {
+  constructor({ position, controlType, canvas }) {
     this.position = position;
+    this.canvas = canvas;
 
     this.img = new Image();
     if (controlType !== "DUMMY") {
@@ -36,9 +37,10 @@ class Car {
 
     this.controls = new Control(controlType);
 
-    if (controlType !== "DUMMY") this.sensor = new Sensor(this);
-    if (this.useBrain)
-      this.brain = new NeuralNetwork([this.sensor.rayCount, 8, 4]);
+    if (controlType !== "DUMMY") {
+      this.sensor = new Sensor(this);
+      this.brain = new NeuralNetwork([this.sensor.rayCount, 6, 4]);
+    }
   }
 
   update(roadBorders, traffic = []) {
@@ -54,9 +56,9 @@ class Car {
         reading ? 1 - reading.offset : 0
       );
 
-      if (this.useBrain) {
-        const outputs = NeuralNetwork.feedForward(offsets, this.brain);
+      const outputs = NeuralNetwork.feedForward(offsets, this.brain);
 
+      if (this.useBrain) {
         const [forward, left, right, reverse] = outputs;
 
         this.controls.forward = forward;
@@ -143,16 +145,16 @@ class Car {
     this.position.y -= Math.cos(radian) * this.speed;
   }
 
-  draw(canvas) {
-    if (this.sensor) this.sensor.draw(canvas);
+  draw() {
+    if (this.sensor) this.sensor.draw(this.canvas);
 
     // if damaged, change image
     const car = this.damaged ? this.damagedCar : this;
 
-    canvas.save().translate(this.position).rotate(-this.angleRadian);
+    this.canvas.save().translate(this.position).rotate(-this.angleRadian);
     if (car.img.complete) {
       // draw the car
-      canvas.drawImage(
+      this.canvas.drawImage(
         car.img,
         {
           x: -car.width / 2,
@@ -163,7 +165,7 @@ class Car {
       );
     } else {
       // ohterwise, draw a placeholder
-      canvas
+      this.canvas
         .beginPath()
         .rect(
           {
@@ -176,7 +178,7 @@ class Car {
         .fill();
     }
 
-    canvas.restore();
+    this.canvas.restore();
   }
 
   set speed(speed) {
