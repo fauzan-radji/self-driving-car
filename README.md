@@ -17,3 +17,4 @@ This repo is based on [this course](https://youtube.com/playlist?list=PLB0Tybl0U
 5. [Simulating traffic.](https://youtu.be/s3MpIa63BXY)
 6. [Implementing neural network.](https://youtu.be/Ve9TcAkpFgY)
 7. [Visualizing neural network.](https://youtu.be/lok3RVBwSqE)
+8. [Optimizing neural network.](https://youtu.be/hVctn8x3jMA)

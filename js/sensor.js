@@ -1,9 +1,9 @@
 class Sensor {
   constructor(car) {
     this.car = car;
-    this.rayCount = 9;
-    this.rayLength = 150;
-    this.raySpread = 90; // degrees
+    this.rayCount = 13;
+    this.rayLength = 130;
+    this.raySpread = 360 - 360 / this.rayCount; // degrees
 
     this.rays = [];
     this.readings = [];
@@ -72,11 +72,11 @@ class Sensor {
       if (this.readings[i]) end = this.readings[i];
 
       canvas.beginPath().line(ray.start, end).stroke({
-        color: "#f00",
+        color: "#0ff",
         width: 2,
       });
 
-      canvas.beginPath().line(ray.end, end).stroke({ color: "#ff0" });
+      canvas.beginPath().line(ray.end, end).stroke({ color: "#f008" });
     }
   }
 }

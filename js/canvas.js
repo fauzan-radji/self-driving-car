@@ -7,6 +7,7 @@ class Canvas {
   #textAlign;
   #baseLine;
   #font;
+  #globalAlpha;
 
   constructor({ id, width, height }) {
     this.id = id;
@@ -220,6 +221,11 @@ class Canvas {
     this.ctx.font = font;
   }
 
+  set globalAlpha(alpha) {
+    this.#globalAlpha = alpha;
+    this.ctx.globalAlpha = alpha;
+  }
+
   get width() {
     return this.canvas.width;
   }
@@ -258,5 +264,9 @@ class Canvas {
 
   get font() {
     return this.#font;
+  }
+
+  get globalAlpha() {
+    return this.#globalAlpha;
   }
 }

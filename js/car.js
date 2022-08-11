@@ -39,7 +39,7 @@ class Car {
 
     if (controlType !== "DUMMY") {
       this.sensor = new Sensor(this);
-      this.brain = new NeuralNetwork([this.sensor.rayCount, 6, 4]);
+      this.brain = new NeuralNetwork([this.sensor.rayCount, 8, 4]);
     }
   }
 
@@ -145,8 +145,8 @@ class Car {
     this.position.y -= Math.cos(radian) * this.speed;
   }
 
-  draw() {
-    if (this.sensor) this.sensor.draw(this.canvas);
+  draw({ drawSensor = false } = {}) {
+    if (this.sensor && drawSensor) this.sensor.draw(this.canvas);
 
     // if damaged, change image
     const car = this.damaged ? this.damagedCar : this;

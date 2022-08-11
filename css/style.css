@@ -8,9 +8,43 @@ body * {
 
 body {
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
   background-color: #39f;
   overflow: hidden;
+}
+
+.buttons-container {
+  height: var(--buttons-container-height);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+button {
+  border: none;
+  background-color: #222;
+  color: #fff;
+  border-radius: 0.8em;
+  padding: 0.8em 1em;
+  margin: 0 1em;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #333;
+}
+
+button:active {
+  background-color: #111;
+}
+
+.canvas-container {
+  height: calc(100vh - var(--buttons-container-height));
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 canvas {
